@@ -200,6 +200,8 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   .skills-grid{grid-template-columns:repeat(2,1fr)}
   .stats{grid-template-columns:repeat(3,1fr);gap:10px}
 }
+@media(hover:none),(pointer:coarse){#cursor,#cursor-ring{display:none!important}}
+.showcase-panel canvas{display:block;width:100%!important;height:340px!important}
 </style>
 </head>
 <body>
@@ -302,28 +304,28 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
     <h2 class="s-title rv">3D <span>Models</span></h2>
     <div class="showcase-row">
       <div class="showcase-panel rv">
-        <canvas id="diamond-canvas" width="560" height="340"></canvas>
+        <canvas id="diamond-canvas"></canvas>
         <div class="showcase-label">
           <div class="showcase-tag">Signature Shape</div>
           <div class="showcase-name">Rotating Diamond</div>
         </div>
       </div>
       <div class="showcase-panel rv" style="transition-delay:.12s">
-        <canvas id="globe-canvas" width="560" height="340"></canvas>
+        <canvas id="globe-canvas"></canvas>
         <div class="showcase-label">
           <div class="showcase-tag">Wireframe Globe</div>
           <div class="showcase-name">Digital Universe</div>
         </div>
       </div>
       <div class="showcase-panel rv" style="transition-delay:.24s">
-        <canvas id="torus-canvas" width="560" height="340"></canvas>
+        <canvas id="torus-canvas"></canvas>
         <div class="showcase-label">
           <div class="showcase-tag">Energy Ring</div>
           <div class="showcase-name">Golden Torus</div>
         </div>
       </div>
       <div class="showcase-panel rv" style="transition-delay:.36s">
-        <canvas id="helix-canvas" width="560" height="340"></canvas>
+        <canvas id="helix-canvas"></canvas>
         <div class="showcase-label">
           <div class="showcase-tag">Particle Helix</div>
           <div class="showcase-name">DNA Strand</div>
@@ -419,13 +421,15 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
         <div class="c-item"><span class="c-icon">💼</span><div><span class="c-lbl">Agency</span><span class="c-val">Shree Sawariya Marketing Agency</span></div></div>
         <div class="c-item"><span class="c-icon">💬</span><div><span class="c-lbl">WhatsApp</span><span class="c-val">Available on WhatsApp</span></div></div>
       </div>
-      <div class="contact-form rv" style="transition-delay:.15s">
-        <input type="text" class="f-in" placeholder="Your Name"/>
-        <input type="email" class="f-in" placeholder="Your Email"/>
-        <input type="text" class="f-in" placeholder="Subject — e.g. Website Design"/>
-        <textarea class="f-in" placeholder="Your Message..."></textarea>
-        <button class="btn-g" style="width:100%;padding:15px;font-size:12px;border:none;cursor:pointer;">Send Message →</button>
-      </div>
+      <form id="contact-form" class="contact-form rv" style="transition-delay:.15s" name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+        <input type="hidden" name="form-name" value="contact"/>
+        <p style="display:none"><input name="bot-field"/></p>
+        <input type="text" name="name" class="f-in" placeholder="Your Name" required/>
+        <input type="email" name="email" class="f-in" placeholder="Your Email" required/>
+        <input type="text" name="subject" class="f-in" placeholder="Subject — e.g. Website Design"/>
+        <textarea name="message" class="f-in" placeholder="Your Message..." required></textarea>
+        <button type="submit" class="btn-g" style="width:100%;padding:15px;font-size:12px;border:none;cursor:pointer;">Send Message →</button>
+      </form>
     </div>
   </div>
 </section>
@@ -660,10 +664,10 @@ window.addEventListener('mousemove',e=>{bMouse.x=e.clientX;bMouse.y=e.clientY});
   const renderer = new THREE.WebGLRenderer({canvas, alpha:true, antialias:true});
   renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
   renderer.setClearColor(0x050505,1);
-  renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+  renderer.setSize(canvas.offsetWidth, canvas.offsetHeight, false);
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(55, canvas.clientWidth/canvas.clientHeight, 0.1,50);
+  const camera = new THREE.PerspectiveCamera(55, canvas.offsetWidth/canvas.offsetHeight, 0.1,50);
   camera.position.set(0,0,4);
 
   const mat = new THREE.MeshStandardMaterial({color:0xD4AF37,metalness:1,roughness:0.05,emissive:0x5a3d00,emissiveIntensity:0.6});
@@ -681,6 +685,7 @@ window.addEventListener('mousemove',e=>{bMouse.x=e.clientX;bMouse.y=e.clientY});
   const pl2 = new THREE.PointLight(0xffffff,1,8); pl2.position.set(-2,-2,2); scene.add(pl2);
 
   let t=0;
+  window.addEventListener('resize',()=>{renderer.setSize(canvas.offsetWidth,canvas.offsetHeight,false);camera.aspect=canvas.offsetWidth/canvas.offsetHeight;camera.updateProjectionMatrix()});
   (function loop(){
     t+=0.012;
     d.rotation.y=t; d.rotation.x=Math.sin(t*.4)*.3;
@@ -695,10 +700,10 @@ window.addEventListener('mousemove',e=>{bMouse.x=e.clientX;bMouse.y=e.clientY});
   const renderer = new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
   renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
   renderer.setClearColor(0x050505,1);
-  renderer.setSize(canvas.clientWidth,canvas.clientHeight);
+  renderer.setSize(canvas.offsetWidth,canvas.offsetHeight,false);
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(55,canvas.clientWidth/canvas.clientHeight,.1,50);
+  const camera = new THREE.PerspectiveCamera(55,canvas.offsetWidth/canvas.offsetHeight,.1,50);
   camera.position.set(0,0,3.8);
 
   // Wireframe globe
@@ -734,6 +739,7 @@ window.addEventListener('mousemove',e=>{bMouse.x=e.clientX;bMouse.y=e.clientY});
   scene.add(Object.assign(new THREE.PointLight(0xD4AF37,2,10),{position:{x:3,y:2,z:3}}));
 
   let t=0;
+  window.addEventListener('resize',()=>{renderer.setSize(canvas.offsetWidth,canvas.offsetHeight,false);camera.aspect=canvas.offsetWidth/canvas.offsetHeight;camera.updateProjectionMatrix()});
   (function loop(){
     t+=.01; globe.rotation.y=t*.3;
     pts.forEach(p=>{
@@ -754,10 +760,10 @@ window.addEventListener('mousemove',e=>{bMouse.x=e.clientX;bMouse.y=e.clientY});
   const renderer = new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
   renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
   renderer.setClearColor(0x050505,1);
-  renderer.setSize(canvas.clientWidth,canvas.clientHeight);
+  renderer.setSize(canvas.offsetWidth,canvas.offsetHeight,false);
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(55,canvas.clientWidth/canvas.clientHeight,.1,50);
+  const camera = new THREE.PerspectiveCamera(55,canvas.offsetWidth/canvas.offsetHeight,.1,50);
   camera.position.set(0,0,4.5);
 
   const mat = new THREE.MeshStandardMaterial({color:0xD4AF37,metalness:1,roughness:0.1,emissive:0x3a2000,emissiveIntensity:0.5});
@@ -786,6 +792,7 @@ window.addEventListener('mousemove',e=>{bMouse.x=e.clientX;bMouse.y=e.clientY});
   const pl2=new THREE.PointLight(0xffffff,1.2,8); pl2.position.set(-2,-2,2); scene.add(pl2);
 
   let t=0;
+  window.addEventListener('resize',()=>{renderer.setSize(canvas.offsetWidth,canvas.offsetHeight,false);camera.aspect=canvas.offsetWidth/canvas.offsetHeight;camera.updateProjectionMatrix()});
   (function loop(){
     t+=.01;
     torus.rotation.x=t*.4; torus.rotation.y=t*.3;
@@ -806,10 +813,10 @@ window.addEventListener('mousemove',e=>{bMouse.x=e.clientX;bMouse.y=e.clientY});
   const renderer = new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
   renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
   renderer.setClearColor(0x050505,1);
-  renderer.setSize(canvas.clientWidth,canvas.clientHeight);
+  renderer.setSize(canvas.offsetWidth,canvas.offsetHeight,false);
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(55,canvas.clientWidth/canvas.clientHeight,.1,50);
+  const camera = new THREE.PerspectiveCamera(55,canvas.offsetWidth/canvas.offsetHeight,.1,50);
   camera.position.set(0,0,5.5);
 
   const grp = new THREE.Group();
@@ -846,6 +853,7 @@ window.addEventListener('mousemove',e=>{bMouse.x=e.clientX;bMouse.y=e.clientY});
   const pl2=new THREE.PointLight(0xffffff,1,8); pl2.position.set(-2,-2,2); scene.add(pl2);
 
   let t=0;
+  window.addEventListener('resize',()=>{renderer.setSize(canvas.offsetWidth,canvas.offsetHeight,false);camera.aspect=canvas.offsetWidth/canvas.offsetHeight;camera.updateProjectionMatrix()});
   (function loop(){
     t+=.008;
     grp.rotation.y=t*.5;
@@ -901,6 +909,30 @@ window.addEventListener('scroll',()=>{
   let cur2='';secs.forEach(s=>{if(window.scrollY>=s.offsetTop-220)cur2=s.id});
   navAs.forEach(a=>{a.style.color=a.getAttribute('href')==='#'+cur2?'var(--gold)':''});
 });
+
+/* ════════════════════════════════════════
+   CONTACT FORM — AJAX
+════════════════════════════════════════ */
+(function(){
+  const form=document.getElementById('contact-form');
+  if(!form)return;
+  form.addEventListener('submit',async e=>{
+    e.preventDefault();
+    const btn=form.querySelector('[type="submit"]');
+    const orig=btn.textContent;
+    btn.textContent='Sending…'; btn.disabled=true;
+    try{
+      const res=await fetch('/',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(new FormData(form)).toString()});
+      if(res.ok){
+        form.innerHTML='<div style="text-align:center;padding:40px 20px"><div style="font-size:40px;margin-bottom:14px;color:var(--gold)">✓</div><div style="font-family:Cinzel,serif;font-size:18px;color:var(--gold);letter-spacing:2px;margin-bottom:10px">Message Sent!</div><p style="color:#777;font-size:13px;line-height:1.7">Thank you for reaching out.<br/>I\'ll get back to you soon.</p></div>';
+      } else {
+        btn.textContent=orig; btn.disabled=false;
+      }
+    } catch(err){
+      btn.textContent=orig; btn.disabled=false;
+    }
+  });
+})();
 </script>
 </body>
 </html>
